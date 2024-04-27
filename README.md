@@ -7,7 +7,7 @@ This repository is the implementation of the solution for the AICITY2023 Track5 
 - Team name: Helios
 - Team members:
   - [Vo Anh Hao](https://www.linkedin.com/in/haovo0602/)
-  - Tran Sieu
+  - [Tran Sieu](https://www.linkedin.com/in/sieutran102)
   - [Nguyen Minh Duc](https://www.linkedin.com/in/nguyễn-minh-đức-b5359124b)
 
 # Public Leaderboard
