@@ -67,7 +67,7 @@ bash scripts/convert.sh
 ```
 
 ## Train
-Firstly, dowload pre-trained models [here](https://drive.google.com/drive/folders/1VG5vysbYevP8s9gvhs9SYD7Q8u0a191v?usp=sharing), then place it in folder `sources/Co-DETR/models`.
+Firstly, dowload pre-trained models [here](https://drive.google.com/file/d/1ffDz9lGNAjEF7iXzINZezZ4alx6S0KcO/view?usp=drive_link), then place it in folder `sources/Co-DETR/models`.
 To start the training process, run:
 ```
 cd sources/Co-DETR
