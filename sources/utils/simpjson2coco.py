@@ -1,7 +1,6 @@
 import os
 import json
 import re
-import pylibmagic
 import magic
 import argparse
 
