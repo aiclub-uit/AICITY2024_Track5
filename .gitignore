@@ -161,7 +161,8 @@ cython_debug/
 
 
 .vscode
-data/*
+data/aicity2024_track5/*
+data/aicity2024_track5_train-real/*
 log/
 *.pth
 *.txt
