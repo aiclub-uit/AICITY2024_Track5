@@ -1,3 +1,10 @@
+"""
+This code is inspired by the code of the following repository:  
+https://github.com/vnptai/AI-City-Challenge-2023/blob/main/object_association/detection_object.py
+
+From VNPT - Team 37, AI City Challenge 2023
+"""
+
 import uuid
 from utils.utils import overlap_ratio
 
