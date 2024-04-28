@@ -1,5 +1,5 @@
 # AICITY2023_Track5
-This repository is the implementation of the solution for the AICITY2023 Track5 challenge - Detecting Violation of Helmet Rule for Motorcyclists.
+This repository is the implementation of the solution for the AICITY2024 Track5 challenge - Detecting Violation of Helmet Rule for Motorcyclists.
 
 ![framework](./static/system_architecture_vec.svg)
 
