@@ -105,59 +105,65 @@ def detect_video(
     batch_size: int,
 ) -> list:
     process_video_results = []
-    for config_name in os.listdir(config_path):
+    configs_weights = [
+        ('co_dino_5scale_swin_large_16e_o365tococo.py','epoch_10.pth'),
+        ('640x640co_dino_5scale_swin_large_16e_o365tococo.py','epoch_10.pth'),
+        ('1280x1280co_dino_5scale_swin_large_16e_o365tococo.py','epoch_10.pth'),
+        ('640x640co_dino_5scale_swin_large_16e_o365tococo.py','epoch_15.pth'),
+        ('1280x1280co_dino_5scale_swin_large_16e_o365tococo.py','epoch_15.pth'),
+    ]
+    for config_name, checkpoint_file in configs_weights:
         config_f_name = config_name.split(".")[0]
-        for checkpoint_file in checkpoint_files:
-            checkpoint_file_name = checkpoint_file.split("/")[-1].split(".")[0]
+        checkpoint_file = os.path.join(checkpoint_files, checkpoint_file)
 
-            lines = []
-            config_file = os.path.join(config_path, config_name)
-            model = init_detector(config_file, checkpoint_file, DatasetEnum.COCO, device='cuda:0')
+        lines = []
+        config_file = os.path.join(config_path, config_name)
+        model = init_detector(config_file, checkpoint_file, DatasetEnum.COCO, device='cuda:0')
 
-            for video_name in tqdm(os.listdir(test_path)):
-                video_id = video_name.split(".")[0]
-                video_path = os.path.join(test_path, video_name)
-                frame_id = 0
-                cap = cv2.VideoCapture(video_path)
-                batch = []
-                is_break = False
-                while True:
-                    while len(batch) < batch_size:
-                        ret, img = cap.read()
-                        if not ret:
-                            is_break = True
-                            break
-                        batch.append(img)
-                    if is_break:
+        for video_name in tqdm(os.listdir(test_path)):
+            video_id = video_name.split(".")[0]
+            video_path = os.path.join(test_path, video_name)
+            frame_id = 0
+            cap = cv2.VideoCapture(video_path)
+            batch = []
+            is_break = False
+            while True:
+                while len(batch) < batch_size:
+                    ret, img = cap.read()
+                    if not ret:
+                        is_break = True
                         break
-                    print(f"[INFO] Current frame_id: {frame_id}")
-                    results = inference_detector(model, batch)
-                    for idx, result in enumerate(results):
-                        bbox_result, segm_result = result, None
-                        bboxes = np.vstack(bbox_result)
-                        labels = [
-                            np.full(bbox.shape[0], i, dtype=np.int32)
-                            for i, bbox in enumerate(bbox_result)
-                        ]
-                        labels = np.concatenate(labels)
-                        score_thr = 0.01
-                        scores = None
-                        if score_thr > 0:
-                            scores = bboxes[:, -1]
-                            inds = scores > score_thr
-                            scores = scores[inds]
-                            bboxes = bboxes[inds, :]
-                            labels = labels[inds]
-                        width, height = img.shape[1], img.shape[0]
-                        for label, score, bbox in zip(labels, scores, bboxes):
-                            bbox = list(map(int, bbox))
-                            label = int(label) + 1
-                            w,h = bbox[2] - bbox[0], bbox[3] - bbox[1]
-                            lines.append(
-                                f"{int(video_id)},{frame_id + idx + 1},{bbox[0]},{bbox[1]},{w},{h},{label},{score}\n"
-                            )
-                    frame_id += len(batch)
-                    batch = []
+                    batch.append(img)
+                if is_break:
+                    break
+                print(f"[INFO] Current frame_id: {frame_id}")
+                results = inference_detector(model, batch)
+                for idx, result in enumerate(results):
+                    bbox_result, segm_result = result, None
+                    bboxes = np.vstack(bbox_result)
+                    labels = [
+                        np.full(bbox.shape[0], i, dtype=np.int32)
+                        for i, bbox in enumerate(bbox_result)
+                    ]
+                    labels = np.concatenate(labels)
+                    score_thr = 0.01
+                    scores = None
+                    if score_thr > 0:
+                        scores = bboxes[:, -1]
+                        inds = scores > score_thr
+                        scores = scores[inds]
+                        bboxes = bboxes[inds, :]
+                        labels = labels[inds]
+                    width, height = img.shape[1], img.shape[0]
+                    for label, score, bbox in zip(labels, scores, bboxes):
+                        bbox = list(map(int, bbox))
+                        label = int(label) + 1
+                        w,h = bbox[2] - bbox[0], bbox[3] - bbox[1]
+                        lines.append(
+                            f"{int(video_id)},{frame_id + idx + 1},{bbox[0]},{bbox[1]},{w},{h},{label},{score}\n"
+                        )
+                frame_id += len(batch)
+                batch = []
             process_video_results.append(lines)
         
     return process_video_results
@@ -216,7 +222,7 @@ if __name__ == '__main__':
     batch_size = args.batch_size
     test_path = args.test_path
     config_path = args.config_path
-    checkpoint_files = [os.path.join(args.checkpoint_path,item) for item in os.listdir(args.checkpoint_path)]
+    checkpoint_files = args.checkpoint_path
     print("Start inference")
     process_video_results = detect_video(test_path, config_path, checkpoint_files, batch_size)
 
@@ -232,8 +238,9 @@ if __name__ == '__main__':
         if result[-1] >= minority_score:
             new_results.append(result)
     results = new_results   
-    print(len(results))  # 2383
+
     print("Start Virtural Expander")
     results = Virtural_Expander(results)
+    
     with open("results.txt", "w") as f:
         f.write(results)
