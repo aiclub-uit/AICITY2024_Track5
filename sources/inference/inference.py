@@ -1,3 +1,4 @@
+# CUDA_VISIBLE_DEVICES=1 python3 inference.py --test_path /mlcv1/WorkingSpace/Personal/haov/aicity2023/Track5_2024/aicity2024_track5_train/test-set/aicity2024_track5_test/videos/
 from mmdet.apis import init_detector, inference_detector
 from mmdet.core import DatasetEnum
 import mmcv
@@ -36,17 +37,27 @@ def Virtural_Expander(data: list):
     for line in data:
         vid, fid, left, top, width, height, cls, conf = line
         if int(float(cls)) != 1:
-            continue
-        if vid not in dataset.keys():
-            dataset[vid] = {}
-        if fid not in dataset[vid].keys():
-            dataset[vid][fid] = {}
-        if 'motor' not in dataset[vid][fid].keys():
-            dataset[vid][fid]['motor'] = []
-        dataset[vid][fid]['motor'].append(Motor(bbox=[float(left), float(top), float(width), float(height),float(cls), float(conf)]))
-        if 'human' not in dataset[vid][fid].keys():
-            dataset[vid][fid]['human'] = []
-        dataset[vid][fid]['human'].append(Human(bbox=[float(left), float(top), float(width), float(height),float(cls), float(conf)]))
+            
+            if vid not in dataset.keys():
+                dataset[vid] = {}
+            if fid not in dataset[vid].keys():
+                dataset[vid][fid] = {}
+            if 'human' not in dataset[vid][fid].keys():
+                dataset[vid][fid]['human'] = []
+            dataset[vid][fid]['human'].append(Human(bbox=[float(left), float(top), float(width), float(height),float(cls), float(conf)]))
+       
+        else:
+            if vid not in dataset.keys():
+                dataset[vid] = {}
+            if fid not in dataset[vid].keys():
+                dataset[vid][fid] = {}
+            if 'motor' not in dataset[vid][fid].keys():
+                dataset[vid][fid]['motor'] = []
+            dataset[vid][fid]['motor'].append(Motor(bbox=[float(left), float(top), float(width), float(height),float(cls), float(conf)]))
+       
+            # if 'human' not in dataset[vid][fid].keys():
+            #     dataset[vid][fid]['human'] = []
+            # dataset[vid][fid]['human'].append(Human(bbox=[float(left), float(top), float(width), float(height),float(cls), float(conf)]))
     # Create ouput
     results = ''
     for vid in tqdm(dataset.keys()):
